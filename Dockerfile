@@ -1,0 +1,41 @@
+FROM java:openjdk-8-jdk-alpine
+
+MAINTAINER Xinjiang Shao <shaoxinjiang at gmail dot com>
+
+ENV SCALA_VERSION 2.12.0-M3
+ENV SCALA_BINURL http://downloads.lightbend.com/scala/$SCALA_VERSION/scala-$SCALA_VERSION.tgz
+ENV SCALA_HOME /usr/share/scala
+
+ENV SBT_VERSION 0.13.11
+ENV SBT_BINURL https://dl.bintray.com/sbt/native-packages/sbt/$SBT_VERSION/sbt-$SBT_VERSION.tgz
+ENV SBT_HOME /usr/share/sbt
+
+RUN apk update && apk add --upgrade apk-tools && apk upgrade --available --update-cache
+
+RUN apk add --no-cache --virtual=.build-dependencies wget ca-certificates && \
+    apk add --no-cache bash && \
+    rm -rf /var/cache/apk/* 
+
+# Install Scala
+RUN cd "/tmp" && \
+    wget $SCALA_BINURL && \
+    tar xzf "scala-${SCALA_VERSION}.tgz" && \
+    mkdir "${SCALA_HOME}" && \
+    rm "/tmp/scala-${SCALA_VERSION}/bin/"*.bat && \
+    mv "/tmp/scala-${SCALA_VERSION}/bin" "/tmp/scala-${SCALA_VERSION}/lib" "${SCALA_HOME}" && \
+    ln -s "${SCALA_HOME}/bin/"* "/usr/bin/" && \
+    apk del .build-dependencies && \
+    rm -rf "/tmp/"* 
+
+# Install sbt
+RUN cd "/tmp" && \
+    wget $SBT_BINURL && \
+    tar xzf "sbt-${SBT_VERSION}.tgz" && \
+    mkdir "${SBT_HOME}" && \
+    rm "/tmp/sbt/bin/"*.bat && \
+    mv "/tmp/sbt/bin" "/tmp/sbt/conf" "${SBT_HOME}" && \
+    ln -s "${SBT_HOME}/bin/"* "/usr/bin/" && \
+    rm -rf "/tmp/"* 
+
+WORKDIR /code
+CMD /bin/bash
