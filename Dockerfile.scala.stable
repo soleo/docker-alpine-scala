@@ -27,6 +27,8 @@ RUN cd "/tmp" && \
     apk del .build-dependencies && \
     rm -rf "/tmp/"* 
 
+RUN scala -version 
+
 # Install sbt
 RUN cd "/tmp" && \
     wget $SBT_BINURL && \
@@ -35,7 +37,9 @@ RUN cd "/tmp" && \
     rm "/tmp/sbt/bin/"*.bat && \
     mv "/tmp/sbt/bin" "/tmp/sbt/conf" "${SBT_HOME}" && \
     ln -s "${SBT_HOME}/bin/"* "/usr/bin/" && \
-    rm -rf "/tmp/"* 
+    rm -rf "/tmp/"*
+
+RUN sbt sbtVersion 
 
 WORKDIR /code
 CMD /bin/bash

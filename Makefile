@@ -8,4 +8,7 @@ stable:
 	docker build -t $(IMAGE_STABLE) -f Dockerfile.scala.stable .
 
 hack:
-	docker run -ti --rm -v `pwd`:/code $(IMAGE) bash
+	docker run -ti --rm -v `pwd`:/code $(IMAGE) /bin/bash
+
+push:
+	docker push $(IMAGE) && docker push $(IMAGE_STABLE)
